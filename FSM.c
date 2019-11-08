@@ -97,7 +97,7 @@ void OutputFunction(FSMType *FSM)
         if((FSM->SwitchA) && (FSM->SwitchB)){
             RotaryEncoderStateCount--;
         }
-        else if(!(FSM->SwitchA) && !(FSM->SwitchB)){
+        else if(!(FSM->SitchA) && !(FSM->SwitchB)){
             RotaryEncoderStateCount++;
         }
         break;
@@ -116,7 +116,7 @@ void OutputFunction(FSMType *FSM)
             RotaryEncoderStateCount--;
         }
         else if(!(FSM->SwitchA) && (FSM->SwitchB)){
-            RotaryEncoderStateCount++;
+           RotaryEncoderStateCount++;
         }
         break;
 
@@ -132,24 +132,26 @@ void OutputFunction(FSMType *FSM)
         TA0CCR1 = STARTVAL;
     }
     else {
-        if (RotaryEncoderStateCount == 4) { // clockwise
+        if (RotaryEncoderStateCount == 48) { // clockwise
             // Insert code action(s) when rotary encoder has been rotated clockwise.
             //TOGGLE_GREEN_LED;
-            FSM->EncNum += 1;
+            //FSM->EncNum += 1;
+            TOGGLE_GREEN_LED;
             RotaryEncoderStateCount = 0;
         }
 
-        else if (RotaryEncoderStateCount == -4) { // counter-clockwise
+        else if (RotaryEncoderStateCount == -48) { // counter-clockwise
             // Insert code for action(s) when rotary encoder has been rotated counter-clockwise.
             //TOGGLE_GREEN_LED;
-            FSM->EncNum -= 1;
+            //FSM->EncNum -= 1;
             RotaryEncoderStateCount = 0;
+            TOGGLE_GREEN_LED;
         }
 
-        if ((int)(FSM->EncNum) == 3){
-            TOGGLE_GREEN_LED;
-            FSM->EncNum = 0;
-        }
+//        if ((int)(FSM->EncNum) == 48){
+//            TOGGLE_GREEN_LED;
+//            FSM->EncNum = 0;
+//        }
     }
     SetLEDDisplay(LEDDisplayValue);
 }
