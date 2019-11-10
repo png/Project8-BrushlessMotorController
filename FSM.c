@@ -10,116 +10,156 @@ void InitializeFSM(FSMType *FSM)
 
 FSMState NextStateFunction(FSMType *FSM)
 {
-    FSMState NextState = FSM->CurrentState;
-
-    if(FSM->Reset){
-        NextState = ResetState;
-        return NextState;
-    }
+    FSMState NextState = FSM->CurrentState;;
 
     switch (FSM->CurrentState) {
     case ResetState:
-        if((FSM->SwitchA) && (FSM->SwitchB)){
-            NextState = AActiveBActive;
+        //if a inactive and b inactive
+        if ((FSM->SwitchA == Inactive) && (FSM->SwitchB == Inactive)){
+            NextState = AInactiveBInactive;
         }
-        else if ((FSM->SwitchA) && !(FSM->SwitchB)){
-            NextState = AActiveBInactive;
-        }
-        else if (!(FSM->SwitchA) && (FSM->SwitchB)){
+        //if a inactive and b active
+        else if ((FSM->SwitchA == Inactive) && (FSM->SwitchB == Active)){
             NextState = AInactiveBActive;
         }
-        else if (!(FSM->SwitchA) && !(FSM->SwitchB)){
-            NextState = AInactiveBInactive;
+        //if a active and b inactive
+        else if ((FSM->SwitchA == Active) && (FSM->SwitchB == Inactive)){
+            NextState= AActiveBInactive;
+        }
+        //if a active and b active
+        else if ((FSM->SwitchA == Active) && (FSM->SwitchB == Active)){
+        NextState = AActiveBActive;
         }
         break;
 
     case AInactiveBInactive:
-        if((FSM->SwitchA) && !(FSM->SwitchB)){
+        // if a active and b inactive
+        if ((FSM->SwitchA == Active) && (FSM->SwitchB == Inactive)){
             NextState = AActiveBInactive;
         }
-        else if(!(FSM->SwitchA) && (FSM->SwitchB)){
+        // if a inactive and b active
+        else if ((FSM->SwitchA == Inactive) && (FSM->SwitchB == Active)){
             NextState = AInactiveBActive;
+        }
+        //else
+        else{
+        NextState = AInactiveBInactive;
         }
         break;
 
     case AInactiveBActive:
-        if((FSM->SwitchA) && (FSM->SwitchB)){
+        // if a active and b active
+        if ((FSM->SwitchA == Active) && (FSM->SwitchB == Active)){
             NextState = AActiveBActive;
         }
-        else if(!(FSM->SwitchA) && !(FSM->SwitchB)){
+        //if a inactive and b inactive
+        else if ((FSM->SwitchA == Inactive) && (FSM->SwitchB == Inactive)){
             NextState = AInactiveBInactive;
+        }
+        //else
+        else{
+            NextState = AInactiveBActive;
         }
         break;
 
     case AActiveBInactive:
-        if((FSM->SwitchA) && (FSM->SwitchB)){
+        // if a active and b active
+        if ((FSM->SwitchA == Active) && (FSM->SwitchB == Active)){
             NextState = AActiveBActive;
         }
-        else if(!(FSM->SwitchA) && !(FSM->SwitchB)){
+        //if a inactive and b inactive
+        else if ((FSM->SwitchA == Inactive) && (FSM->SwitchB == Inactive)){
             NextState = AInactiveBInactive;
+        }
+        //else
+        else{
+            NextState = AActiveBInactive;
         }
         break;
 
     case AActiveBActive:
-        if((FSM->SwitchA) && !(FSM->SwitchB)){
+        // if a active and b inactive
+        if ((FSM->SwitchA == Active) && (FSM->SwitchB == Inactive)){
             NextState = AActiveBInactive;
         }
-        else if(!(FSM->SwitchA) && (FSM->SwitchB)){
+        // if a inactive and b active
+        else if ((FSM->SwitchA == Inactive) && (FSM->SwitchB == Active)){
             NextState = AInactiveBActive;
+        }
+
+        //else
+        else{
+            NextState = AActiveBActive;
         }
         break;
 
     default:
         NextState = ResetState;
     }
+    if(FSM->Reset == Active){
+        NextState = ResetState;
+    }
 
     return NextState;
+
 }
 
 void OutputFunction(FSMType *FSM)
 {
+    if (FSM->CurrentState == ResetState) {
+        // Insert code to initialize TA0CCR1 and the LED display value.
+        TA0CCR1 = 8000;
+        LEDDisplayValue = 5;
+        __nop();
+    }
     // Update RotaryEncoderStateCount
     switch (FSM->CurrentState) {
     case ResetState:
         RotaryEncoderStateCount = 0;
         break;
-
     case AInactiveBInactive:
-        if((FSM->SwitchA) && !(FSM->SwitchB)){
+
+        if(FSM->SwitchA == Inactive && FSM->SwitchB == Active){
             RotaryEncoderStateCount++;
+           // FSM->SwitchB = 0;
         }
-        else if(!(FSM->SwitchA) && (FSM->SwitchB)){
+        else if(FSM->SwitchA == Active && FSM->SwitchB == Inactive){
             RotaryEncoderStateCount--;
+           // FSM->SwitchA = 0;
         }
         break;
-
     case AInactiveBActive:
-        if((FSM->SwitchA) && (FSM->SwitchB)){
-            RotaryEncoderStateCount--;
-        }
-        else if(!(FSM->SitchA) && !(FSM->SwitchB)){
+        if(FSM->SwitchA == Active && FSM->SwitchB == Active){
             RotaryEncoderStateCount++;
+           // FSM->SwitchA = Inactive;
+        }
+        else if(FSM->SwitchA == Inactive && FSM->SwitchB == Inactive){
+            RotaryEncoderStateCount--;
+            //FSM->SwitchB = 1;
         }
         break;
-
     case AActiveBInactive:
-        if((FSM->SwitchA) && (FSM->SwitchB)){
+        if(FSM->SwitchA == Inactive && FSM->SwitchB == Inactive){
             RotaryEncoderStateCount++;
+            //FSM->SwitchA = Active;
         }
-        else if(!(FSM->SwitchA) && !(FSM->SwitchB)){
+        else if(FSM->SwitchA == Active && FSM->SwitchB == Active){
             RotaryEncoderStateCount--;
+            //FSM->SwitchB = 0;
         }
-        break;
 
+        break;
     case AActiveBActive:
-        if((FSM->SwitchA) && !(FSM->SwitchB)){
+        if(FSM->SwitchA == Inactive && FSM->SwitchB == Active){
             RotaryEncoderStateCount--;
+            //FSM->SwitchA = Active;
         }
-        else if(!(FSM->SwitchA) && (FSM->SwitchB)){
-           RotaryEncoderStateCount++;
+        else if(FSM->SwitchA == Active && FSM->SwitchB == Inactive){
+            RotaryEncoderStateCount++;
+            //FSM->SwitchB = Active;
         }
-        break;
 
+        break;
     default:
         RotaryEncoderStateCount = 0;
     }
@@ -128,30 +168,30 @@ void OutputFunction(FSMType *FSM)
     // and update the corresponding value displayed in the two 7-segment displays.
     if (FSM->CurrentState == ResetState) {
         // Insert code to initialize TA0CCR1 and the LED display value.
+        TA0CCR1 = 8000;
         LEDDisplayValue = 5;
-        TA0CCR1 = STARTVAL;
+        __nop();
     }
     else {
         if (RotaryEncoderStateCount == 48) { // clockwise
             // Insert code action(s) when rotary encoder has been rotated clockwise.
-            //TOGGLE_GREEN_LED;
-            //FSM->EncNum += 1;
-            TOGGLE_GREEN_LED;
+//            if(LEDDisplayValue < DISPLAY_LIMIT){
+//                LEDDisplayValue++;
+//                TA0CCR1 += TA0CCR0/DISPLAY_LIMIT;
+//            }
             RotaryEncoderStateCount = 0;
+            TOGGLE_GREEN_LED;
         }
 
-        else if (RotaryEncoderStateCount == -48) { // counter-clockwise
+        if (RotaryEncoderStateCount == -48) { // counter-clockwise
             // Insert code for action(s) when rotary encoder has been rotated counter-clockwise.
-            //TOGGLE_GREEN_LED;
-            //FSM->EncNum -= 1;
+//            if(LEDDisplayValue > 0){
+//                LEDDisplayValue--;
+//                TA0CCR1 -= TA0CCR0/DISPLAY_LIMIT;
+//            }
             RotaryEncoderStateCount = 0;
             TOGGLE_GREEN_LED;
         }
-
-//        if ((int)(FSM->EncNum) == 48){
-//            TOGGLE_GREEN_LED;
-//            FSM->EncNum = 0;
-//        }
     }
-    SetLEDDisplay(LEDDisplayValue);
+    //SetLEDDisplay(LEDDisplayValue);
 }

@@ -25,7 +25,7 @@ void ConfigureTimerA(void)
 
     // Finally, start the timer in up mode using the SMCLK and an appropriate
     // input divide for the Timer A clock.
-    TA0CTL = (MC_1 | TASSEL_2 | ID_3);
+    TA0CTL = (MC_1 | TASSEL_2 | ID_1);
 
 }
 
