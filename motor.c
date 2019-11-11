@@ -7,6 +7,8 @@ void InitializeRotaryEncoderPortPins(void)
     SET_STNDBY_AS_AN_OUTPUT;
     SET_PWM_AS_AN_OUTPUT;
 
+    P1SEL |= PWM_BIT;
+
     STNDBY_PORT |= STNDBY_PIN;
     PWM_PORT |= PWM_PIN;
 }

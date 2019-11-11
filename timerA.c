@@ -8,8 +8,8 @@ void ConfigureTimerA(void)
     TA0CTL = (MC_0 | TACLR);
 
     // Assign a value to TA0CCR0 and TA0CCR1.
-    TA0CCR0 = MAXVAL-1;
-    TA0CCR1 = STARTVAL;
+    TA0CCR0 = STARTVAL-1;
+    TA0CCR1 = 8000;
 
     // Choose Reset/Set mode so that increase in intensity corresponds to
     // clockwise rotation of rotary encoder, and decrease corresponds to

@@ -1,0 +1,1 @@
+"./FSM.o" "./LED.o" "./LED_display.o" "./debounce.o" "./main.o" "./motor.o" "./pushbutton.o" "./spi.o" "./timerA.o" -T"../msp430g2553.ld" -Wl,--start-group -lgcc -lc -Wl,--end-group 
